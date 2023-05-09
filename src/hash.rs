@@ -5,7 +5,7 @@ use sovereign_sdk::{
 };
 use subxt::utils::H256;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Default, Clone, Debug, PartialEq)]
 pub struct AvailHash(pub H256);
 
 impl BlockHashTrait for AvailHash {}

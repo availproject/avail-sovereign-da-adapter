@@ -3,10 +3,14 @@ use avail_subxt::primitives::Header;
 use sovereign_sdk::core::traits::{BlockHeaderTrait, CanonicalHash};
 use sp_core::{blake2_256, Encode};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(codec::Encode, codec::Decode, Debug, PartialEq, Clone)]
 pub struct AvailHeader {
     pub header: Header,
+
+    #[codec(skip)]
     hash: AvailHash,
+
+    #[codec(skip)]
     pub prev_hash: AvailHash,
 }
 

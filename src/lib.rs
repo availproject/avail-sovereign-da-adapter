@@ -9,6 +9,7 @@ mod header;
 #[cfg(feature = "native")]
 mod service;
 mod transaction;
+mod types;
 mod utils;
 mod verifier;
 

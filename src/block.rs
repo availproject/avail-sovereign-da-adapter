@@ -1,6 +1,4 @@
-use crate::{header::AvailHeader, utils::data_to_short};
-use avail_subxt::primitives::Header;
-use codec::Decode as CodecDecode;
+use crate::{header::AvailHeader, transaction::AvailBlobTransaction, utils::data_to_short};
 use sovereign_sdk::{
     core::traits::CanonicalHash,
     serial::{Decode, DecodeBorrowed, DeserializationError, Encode},
@@ -10,6 +8,7 @@ use sovereign_sdk::{
 #[derive(PartialEq, Clone, Debug)]
 pub struct AvailBlock {
     pub header: AvailHeader,
+    pub transactions: Vec<AvailBlobTransaction>,
 }
 
 impl SlotData for AvailBlock {
@@ -34,16 +33,19 @@ impl<'de> DecodeBorrowed<'de> for AvailBlock {
     type Error = DeserializationError;
 
     fn decode_from_slice(mut target: &'de [u8]) -> Result<Self, Self::Error> {
-        let header = Header::decode(&mut target).map_err(|_error| data_to_short(0, 0))?;
+        let (header, transactions): (AvailHeader, Vec<AvailBlobTransaction>) =
+            codec::Decode::decode(&mut target).map_err(|_error| data_to_short(0, 0))?;
         Ok(AvailBlock {
-            header: AvailHeader::new(header),
+            header,
+            transactions,
         })
     }
 }
 
 impl Encode for AvailBlock {
     fn encode(&self, target: &mut impl std::io::Write) {
-        let encoded = codec::Encode::encode(&self.header.header);
+        let data = (&self.header, &self.transactions);
+        let encoded = codec::Encode::encode(&data);
         target
             .write_all(&encoded)
             .expect("Serialization should not fail")
