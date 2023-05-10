@@ -17,7 +17,6 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 borsh = { version = "0.10.3", features = ["bytes"] }
 
-sp-core = "6.0.0"
 subxt = "0.27.1"
 avail-subxt = { git = "https://github.com/availproject/avail.git", tag = "v1.5.0-303f39d" }
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive", "full", "bit-vec"] }

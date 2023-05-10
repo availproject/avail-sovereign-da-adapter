@@ -1,4 +1,4 @@
-use crate::utils::data_to_short;
+use crate::utils::{data_too_short_error, deserialization_error};
 use sovereign_sdk::{
     da::BlockHashTrait,
     serial::{Decode, DecodeBorrowed, DeserializationError, Encode},
@@ -15,9 +15,7 @@ impl Decode for AvailHash {
 
     fn decode<R: std::io::Read>(target: &mut R) -> Result<Self, <Self as Decode>::Error> {
         let mut out = [0u8; 32];
-        target
-            .read_exact(&mut out)
-            .map_err(|_| data_to_short(32, 0))?;
+        target.read_exact(&mut out).map_err(deserialization_error)?;
         Ok(AvailHash(H256::from_slice(&out)))
     }
 }
@@ -27,7 +25,7 @@ impl<'de> DecodeBorrowed<'de> for AvailHash {
 
     fn decode_from_slice(target: &'de [u8]) -> Result<Self, Self::Error> {
         if target.len() < 32 {
-            return Err(data_to_short(32, target.len()));
+            return Err(data_too_short_error());
         }
         Ok(AvailHash(H256::from_slice(&target[..32])))
     }
@@ -49,10 +47,9 @@ impl AsRef<[u8]> for AvailHash {
 
 #[cfg(test)]
 mod tests {
+    use crate::spec::hash::AvailHash;
     use sovereign_sdk::serial::{Decode, Encode};
     use subxt::utils::H256;
-
-    use crate::hash::AvailHash;
 
     #[test]
     fn test_hash() {

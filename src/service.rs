@@ -1,9 +1,8 @@
 use crate::{
-    block::AvailBlock,
-    header::AvailHeader,
-    transaction::AvailBlobTransaction,
-    types::{Confidence, ExtrinsicsData},
-    DaLayerSpec,
+    avail::{Confidence, ExtrinsicsData},
+    spec::{
+        block::AvailBlock, header::AvailHeader, transaction::AvailBlobTransaction, DaLayerSpec,
+    },
 };
 use avail_subxt::AvailConfig;
 use core::{future::Future, pin::Pin};
@@ -13,8 +12,8 @@ use subxt::OnlineClient;
 use tracing::info;
 
 pub struct DaProvider {
-    node_client: OnlineClient<AvailConfig>,
-    light_client_url: String,
+    pub node_client: OnlineClient<AvailConfig>,
+    pub light_client_url: String,
 }
 
 impl DaProvider {
@@ -44,30 +43,38 @@ impl DaService for DaProvider {
         let client = self.node_client.clone();
         let confidence_url = self.confidence_url(height);
         let appdata_url = self.appdata_url(height);
+
         Box::pin(async move {
+            // NOTE: Only case when application data is present and verified is supported
             let response = reqwest::get(confidence_url).await?;
             if response.status() != StatusCode::OK {
-                todo!()
+                unimplemented!()
             }
             let response: Confidence = serde_json::from_str(&response.text().await?)?;
             if response.confidence < 92.5 {
-                todo!()
+                unimplemented!()
             }
             let response = reqwest::get(appdata_url).await?;
             if response.status() != StatusCode::OK {
-                todo!()
+                unimplemented!()
             }
             let appdata: ExtrinsicsData = serde_json::from_str(&response.text().await?)?;
+
             info!("Appdata: {:?}", appdata);
+
             let hash = client.rpc().block_hash(Some(height.into())).await?.unwrap();
+
             info!("Hash: {:?}", hash);
+
             let header = client.rpc().header(Some(hash)).await?.unwrap();
+
             info!("Header: {:?}", header);
-            let header = AvailHeader::new(header);
+
+            let header = AvailHeader::new(header, hash);
             let transactions = appdata
                 .extrinsics
                 .into_iter()
-                .map(|e| AvailBlobTransaction(e))
+                .map(AvailBlobTransaction)
                 .collect();
             Ok(AvailBlock {
                 header,
@@ -128,6 +135,6 @@ mod tests {
             node_client,
             light_client_url,
         };
-        da_service.get_finalized_at(357).await.unwrap();
+        da_service.get_finalized_at(1).await.unwrap();
     }
 }
