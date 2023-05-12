@@ -11,7 +11,7 @@ pub struct DaLayerSpec;
 impl DaSpec for DaLayerSpec {
     type SlotHash = hash::AvailHash;
 
-    type Address = address::AvailAddress;
+    type ChainParams = ();
 
     type BlockHeader = header::AvailHeader;
 

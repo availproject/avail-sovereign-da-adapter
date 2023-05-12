@@ -1,15 +1,12 @@
 use super::hash::AvailHash;
 use avail_subxt::primitives::Header;
+use serde::{Deserialize, Serialize};
 use sovereign_sdk::core::traits::{BlockHeaderTrait, CanonicalHash};
 use subxt::utils::H256;
 
-#[derive(codec::Encode, codec::Decode, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct AvailHeader {
-    #[codec(skip)]
     hash: AvailHash,
-
-    #[codec(skip)]
-    pub prev_hash: AvailHash,
 
     pub header: Header,
 }
@@ -18,7 +15,6 @@ impl AvailHeader {
     pub fn new(header: Header, hash: H256) -> Self {
         Self {
             hash: AvailHash(hash),
-            prev_hash: AvailHash(header.parent_hash),
             header,
         }
     }
@@ -27,8 +23,8 @@ impl AvailHeader {
 impl BlockHeaderTrait for AvailHeader {
     type Hash = AvailHash;
 
-    fn prev_hash(&self) -> &Self::Hash {
-        &self.prev_hash
+    fn prev_hash(&self) -> Self::Hash {
+        AvailHash(self.header.parent_hash)
     }
 }
 

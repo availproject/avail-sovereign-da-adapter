@@ -7,7 +7,8 @@ use crate::{
 use avail_subxt::AvailConfig;
 use core::{future::Future, pin::Pin};
 use reqwest::StatusCode;
-use sovereign_sdk::services::da::DaService;
+use serde::{Deserialize, Serialize};
+use sovereign_sdk::{da::DaSpec, services::da::DaService};
 use subxt::OnlineClient;
 use tracing::info;
 
@@ -28,7 +29,16 @@ impl DaProvider {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct RuntimeConfig {
+    light_client_url: String,
+    #[serde(skip)]
+    node_client: Option<OnlineClient<AvailConfig>>,
+}
+
 impl DaService for DaProvider {
+    type RuntimeConfig = RuntimeConfig;
+
     type Spec = DaLayerSpec;
 
     type FilteredBlock = AvailBlock;
@@ -40,12 +50,12 @@ impl DaService for DaProvider {
     // Make an RPC call to the node to get the finalized block at the given height, if one exists.
     // If no such block exists, block until one does.
     fn get_finalized_at(&self, height: u64) -> Self::Future<Self::FilteredBlock> {
-        let client = self.node_client.clone();
+        let node_client = self.node_client.clone();
         let confidence_url = self.confidence_url(height);
         let appdata_url = self.appdata_url(height);
 
         Box::pin(async move {
-            // NOTE: Only case when application data is present and verified is supported
+            // NOTE: Only supported case is when application data is present and verified
             let response = reqwest::get(confidence_url).await?;
             if response.status() != StatusCode::OK {
                 unimplemented!()
@@ -62,11 +72,15 @@ impl DaService for DaProvider {
 
             info!("Appdata: {:?}", appdata);
 
-            let hash = client.rpc().block_hash(Some(height.into())).await?.unwrap();
+            let hash = node_client
+                .rpc()
+                .block_hash(Some(height.into()))
+                .await?
+                .unwrap();
 
             info!("Hash: {:?}", hash);
 
-            let header = client.rpc().header(Some(hash)).await?.unwrap();
+            let header = node_client.rpc().header(Some(hash)).await?.unwrap();
 
             info!("Header: {:?}", header);
 
@@ -96,7 +110,7 @@ impl DaService for DaProvider {
     fn extract_relevant_txs(
         &self,
         block: Self::FilteredBlock,
-    ) -> Vec<<Self::Spec as sovereign_sdk::da::DaSpec>::BlobTransaction> {
+    ) -> Vec<<Self::Spec as DaSpec>::BlobTransaction> {
         block.transactions
     }
 
@@ -110,16 +124,31 @@ impl DaService for DaProvider {
         &self,
         block: Self::FilteredBlock,
     ) -> (
-        Vec<<Self::Spec as sovereign_sdk::da::DaSpec>::BlobTransaction>,
-        <Self::Spec as sovereign_sdk::da::DaSpec>::InclusionMultiProof,
-        <Self::Spec as sovereign_sdk::da::DaSpec>::CompletenessProof,
+        Vec<<Self::Spec as DaSpec>::BlobTransaction>,
+        <Self::Spec as DaSpec>::InclusionMultiProof,
+        <Self::Spec as DaSpec>::CompletenessProof,
     ) {
         (block.transactions, (), ())
+    }
+
+    fn new(
+        config: Self::RuntimeConfig,
+        _chain_params: <Self::Spec as DaSpec>::ChainParams,
+    ) -> Self {
+        let node_client = config.node_client.unwrap();
+        let light_client_url = config.light_client_url;
+
+        DaProvider {
+            node_client,
+            light_client_url,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::service::RuntimeConfig;
+
     use super::DaProvider;
     use avail_subxt::build_client;
     use sovereign_sdk::services::da::DaService;
@@ -130,11 +159,12 @@ mod tests {
 
         let node_ws = "ws://127.0.0.1:9944";
         let light_client_url = "http://127.0.0.1:7000".to_string();
-        let node_client = build_client(node_ws).await.unwrap();
-        let da_service = DaProvider {
+        let node_client = Some(build_client(node_ws).await.unwrap());
+        let runtime_config = RuntimeConfig {
             node_client,
             light_client_url,
         };
+        let da_service = DaProvider::new(runtime_config, ());
         da_service.get_finalized_at(1).await.unwrap();
     }
 }

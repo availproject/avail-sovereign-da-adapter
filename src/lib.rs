@@ -4,7 +4,6 @@ mod avail;
 #[cfg(feature = "native")]
 pub mod service;
 pub mod spec;
-mod utils;
 pub mod verifier;
 
 // NOTE: Remove once dependency to the node is removed

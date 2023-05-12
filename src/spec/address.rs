@@ -1,14 +1,29 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use core::fmt::{Display, Formatter};
+use serde::{Deserialize, Serialize};
 use sovereign_sdk::core::traits::AddressTrait;
+use subxt::utils::H256;
 
-#[derive(Debug, PartialEq, Clone, Eq, BorshSerialize, BorshDeserialize)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
 pub struct AvailAddress(pub [u8; 32]);
 
 impl AddressTrait for AvailAddress {}
 
+impl Display for AvailAddress {
+    fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
+	let hash = H256(self.0);
+        write!(f, "{hash}")
+    }
+}
+
 impl AsRef<[u8]> for AvailAddress {
     fn as_ref(&self) -> &[u8] {
         self.0.as_ref()
+    }
+}
+
+impl From<[u8; 32]> for AvailAddress {
+    fn from(value: [u8; 32]) -> Self {
+        Self(value)
     }
 }
 

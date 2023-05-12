@@ -296,7 +296,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4114279215a005bc675e386011e594e1d9b800918cea18fcadadcce864a2046b"
 dependencies = [
  "borsh-derive",
- "bytes",
  "hashbrown 0.13.2",
 ]
 
@@ -813,14 +812,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e51093e27b0797c359783294ca4f0a911c270184cb10f85783b118614a1501be"
 dependencies = [
  "instant",
-]
-
-[[package]]
-name = "first-read-last-write-cache"
-version = "0.1.0"
-source = "git+https://github.com/Sovereign-Labs/sovereign.git?rev=5e43c3ee9b5785abdca33b21c86fd38dbd9285e0#5e43c3ee9b5785abdca33b21c86fd38dbd9285e0"
-dependencies = [
- "thiserror",
 ]
 
 [[package]]
@@ -2173,8 +2164,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "avail-subxt",
- "borsh",
- "parity-scale-codec",
  "reqwest",
  "serde",
  "serde_json",
@@ -2918,12 +2907,11 @@ dependencies = [
 [[package]]
 name = "sovereign-sdk"
 version = "0.1.0"
-source = "git+https://github.com/Sovereign-Labs/sovereign.git?rev=5e43c3ee9b5785abdca33b21c86fd38dbd9285e0#5e43c3ee9b5785abdca33b21c86fd38dbd9285e0"
+source = "git+https://github.com/Sovereign-Labs/sovereign.git?rev=c90484449c0d6497fa5d845e38023845393411d#c90484449c0d6497fa5d845e38023845393411d1"
 dependencies = [
  "anyhow",
  "borsh",
  "bytes",
- "first-read-last-write-cache",
  "jmt",
  "serde",
  "sha2 0.10.6",

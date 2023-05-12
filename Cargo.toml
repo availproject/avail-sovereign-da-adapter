@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-sovereign-sdk =  { git = "https://github.com/Sovereign-Labs/sovereign.git", rev = "5e43c3ee9b5785abdca33b21c86fd38dbd9285e0" }
+sovereign-sdk =  { git = "https://github.com/Sovereign-Labs/sovereign.git", rev = "c90484449c0d6497fa5d845e38023845393411d" }
 
 tokio = { version = "1", features = ["full"] }
 
@@ -15,11 +15,9 @@ anyhow = "1.0"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-borsh = { version = "0.10.3", features = ["bytes"] }
 
 subxt = "0.27.1"
 avail-subxt = { git = "https://github.com/availproject/avail.git", tag = "v1.5.0-303f39d" }
-codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive", "full", "bit-vec"] }
 
 reqwest = { version = "0.11", features = ["json"] }
 
