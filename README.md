@@ -1,17 +1,8 @@
-# Presence
+# Avail Sovereign DA adapter (presence)
 
 Presence is a _research-only_ adapter making Avail compatible with the Sovereign SDK.
 
 > **_NOTE:_** None of its code is suitable for production use.
-
-## Da Adapter Template
-
-This repository provides a template for implementing an adapter between the Sovereign SDK
-and a data availability layer. As the template suggests, such adapters are _libraries_, intended
-to be consumed by a downstream binary crate which implements the Rollup full node.
-
-To implement an adaptor, simply define the types used by your DA layer in the `DaSpec` in `lib.rs`,
-then implement the two core traits scaffolded in this repository - `DaVerifier` and `DaService`.
 
 ### The DaVerifier Trait
 

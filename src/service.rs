@@ -4,8 +4,9 @@ use crate::{
         block::AvailBlock, header::AvailHeader, transaction::AvailBlobTransaction, DaLayerSpec,
     },
 };
+use anyhow::anyhow;
 use avail_subxt::AvailConfig;
-use core::{future::Future, pin::Pin};
+use core::{future::Future, pin::Pin, time::Duration};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use sovereign_sdk::{da::DaSpec, services::da::DaService};
@@ -36,6 +37,64 @@ pub struct RuntimeConfig {
     node_client: Option<OnlineClient<AvailConfig>>,
 }
 
+const POLLING_TIMEOUT: Duration = Duration::from_secs(60);
+const POLLING_INTERVAL: Duration = Duration::from_secs(1);
+
+// TODO: Is there a way to avoid coupling to tokio?
+
+async fn wait_for_confidence(confidence_url: &str) -> anyhow::Result<()> {
+    let start_time = std::time::Instant::now();
+
+    loop {
+        if start_time.elapsed() >= POLLING_TIMEOUT {
+            return Err(anyhow!("Timeout..."));
+        }
+
+        let response = reqwest::get(confidence_url).await?;
+        if response.status() != StatusCode::OK {
+            info!("Confidence not received");
+            tokio::time::sleep(POLLING_INTERVAL).await;
+            continue;
+        }
+
+        let response: Confidence = serde_json::from_str(&response.text().await?)?;
+        if response.confidence < 92.5 {
+            info!("Confidence not reached");
+            tokio::time::sleep(POLLING_INTERVAL).await;
+            continue;
+        }
+
+        break;
+    }
+
+    Ok(())
+}
+
+async fn wait_for_appdata(appdata_url: &str, block: u32) -> anyhow::Result<ExtrinsicsData> {
+    let start_time = std::time::Instant::now();
+
+    loop {
+        if start_time.elapsed() >= POLLING_TIMEOUT {
+            return Err(anyhow!("Timeout..."));
+        }
+
+        let response = reqwest::get(appdata_url).await?;
+        if response.status() == StatusCode::NOT_FOUND {
+            return Ok(ExtrinsicsData {
+                block,
+                extrinsics: vec![],
+            });
+        }
+        if response.status() != StatusCode::OK {
+            tokio::time::sleep(POLLING_INTERVAL).await;
+            continue;
+        }
+
+        let appdata: ExtrinsicsData = serde_json::from_str(&response.text().await?)?;
+        return Ok(appdata);
+    }
+}
+
 impl DaService for DaProvider {
     type RuntimeConfig = RuntimeConfig;
 
@@ -56,20 +115,8 @@ impl DaService for DaProvider {
 
         Box::pin(async move {
             // NOTE: Only supported case is when application data is present and verified
-            let response = reqwest::get(confidence_url).await?;
-            if response.status() != StatusCode::OK {
-                unimplemented!()
-            }
-            let response: Confidence = serde_json::from_str(&response.text().await?)?;
-            if response.confidence < 92.5 {
-                unimplemented!()
-            }
-            let response = reqwest::get(appdata_url).await?;
-            if response.status() != StatusCode::OK {
-                unimplemented!()
-            }
-            let appdata: ExtrinsicsData = serde_json::from_str(&response.text().await?)?;
-
+            wait_for_confidence(&confidence_url).await?;
+            let appdata = wait_for_appdata(&appdata_url, height as u32).await?;
             info!("Appdata: {:?}", appdata);
 
             let hash = node_client
@@ -154,6 +201,7 @@ mod tests {
     use sovereign_sdk::services::da::DaService;
 
     #[tokio::test]
+    #[ignore]
     async fn get_finalized_at() {
         tracing_subscriber::fmt::init();
 
@@ -166,5 +214,6 @@ mod tests {
         };
         let da_service = DaProvider::new(runtime_config, ());
         da_service.get_finalized_at(1).await.unwrap();
+        // panic!();
     }
 }

@@ -10,7 +10,7 @@ impl AddressTrait for AvailAddress {}
 
 impl Display for AvailAddress {
     fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
-	let hash = H256(self.0);
+        let hash = H256(self.0);
         write!(f, "{hash}")
     }
 }

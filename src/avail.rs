@@ -10,6 +10,6 @@ pub struct Confidence {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ExtrinsicsData {
-    block: u32,
+    pub block: u32,
     pub extrinsics: Vec<AppUncheckedExtrinsic>,
 }

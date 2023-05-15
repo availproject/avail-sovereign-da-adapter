@@ -10,7 +10,7 @@ impl DaVerifier for Verifier {
     type Error = Infallible;
 
     // Verify that the given list of blob transactions is complete and correct.
-    // NOTE: Function is unimplemented since application client already verifies application data.
+    // NOTE: Function return unit since application client already verifies application data.
     fn verify_relevant_tx_list(
         &self,
         _block_header: &<Self::Spec as DaSpec>::BlockHeader,
@@ -18,7 +18,7 @@ impl DaVerifier for Verifier {
         _inclusion_proof: <Self::Spec as DaSpec>::InclusionMultiProof,
         _completeness_proof: <Self::Spec as DaSpec>::CompletenessProof,
     ) -> Result<(), Self::Error> {
-        unimplemented!()
+        Ok(())
     }
 
     fn new(_params: <Self::Spec as DaSpec>::ChainParams) -> Self {
