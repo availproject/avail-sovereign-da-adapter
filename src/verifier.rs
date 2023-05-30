@@ -1,6 +1,6 @@
 use crate::spec::DaLayerSpec;
 use core::convert::Infallible;
-use sovereign_sdk::da::{DaSpec, DaVerifier};
+use sov_rollup_interface::da::{DaSpec, DaVerifier};
 
 pub struct Verifier;
 

@@ -9,7 +9,7 @@ use avail_subxt::AvailConfig;
 use core::{future::Future, pin::Pin, time::Duration};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use sovereign_sdk::{da::DaSpec, services::da::DaService};
+use sov_rollup_interface::{da::DaSpec, services::da::DaService};
 use subxt::OnlineClient;
 use tracing::info;
 
@@ -190,6 +190,10 @@ impl DaService for DaProvider {
             light_client_url,
         }
     }
+
+    fn send_transaction(&self, _blob: &[u8]) -> Self::Future<()> {
+        unimplemented!("The avail light client does not currently support sending transactions");
+    }
 }
 
 #[cfg(test)]
@@ -198,7 +202,7 @@ mod tests {
 
     use super::DaProvider;
     use avail_subxt::build_client;
-    use sovereign_sdk::services::da::DaService;
+    use sov_rollup_interface::services::da::DaService;
 
     #[tokio::test]
     #[ignore]

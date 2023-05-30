@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-sovereign-sdk =  { git = "https://github.com/Sovereign-Labs/sovereign.git", rev = "c90484449c0d6497fa5d845e38023845393411d" }
+sov-rollup-interface =  { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "f5b4bd4ef78b7ab85551a25eeb9d70ebc3c9ebd2" }
 
 tokio = { version = "1", features = ["full"] }
 

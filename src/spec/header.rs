@@ -1,7 +1,7 @@
 use super::hash::AvailHash;
 use avail_subxt::primitives::Header;
 use serde::{Deserialize, Serialize};
-use sovereign_sdk::core::traits::{BlockHeaderTrait, CanonicalHash};
+use sov_rollup_interface::traits::{BlockHeaderTrait, CanonicalHash};
 use subxt::utils::H256;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]

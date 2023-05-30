@@ -296,6 +296,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4114279215a005bc675e386011e594e1d9b800918cea18fcadadcce864a2046b"
 dependencies = [
  "borsh-derive",
+ "bytes",
  "hashbrown 0.13.2",
 ]
 
@@ -1174,6 +1175,9 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "hmac"
@@ -1418,37 +1422,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12b6ee2129af8d4fb011108c73d99a1b83a85977f23b82460c0ae2e25bb4b57f"
 
 [[package]]
-name = "itertools"
-version = "0.10.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
-dependencies = [
- "either",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
-
-[[package]]
-name = "jmt"
-version = "0.5.0"
-source = "git+https://github.com/penumbra-zone/jmt.git?rev=3ca60665bee78549b37bab5ec461d108dada874d#3ca60665bee78549b37bab5ec461d108dada874d"
-dependencies = [
- "anyhow",
- "borsh",
- "hashbrown 0.13.2",
- "hex",
- "itertools",
- "mirai-annotations",
- "num-derive",
- "num-traits",
- "serde",
- "sha2 0.10.6",
- "tracing",
-]
 
 [[package]]
 name = "js-sys"
@@ -1806,12 +1783,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mirai-annotations"
-version = "1.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9be0862c1b3f26a88803c4a49de6889c10e608b3ee9344e6ef5b45fb37ad3d1"
-
-[[package]]
 name = "native-tls"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1854,17 +1825,6 @@ dependencies = [
  "autocfg",
  "num-integer",
  "num-traits",
-]
-
-[[package]]
-name = "num-derive"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "876a53fff98e03a936a674b29568b0e605f06b29372c2489ff4de23f1949743d"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
 ]
 
 [[package]]
@@ -2167,7 +2127,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "sovereign-sdk",
+ "sov-rollup-interface",
  "subxt",
  "tokio",
  "tracing",
@@ -2905,16 +2865,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "sovereign-sdk"
+name = "sov-rollup-interface"
 version = "0.1.0"
-source = "git+https://github.com/Sovereign-Labs/sovereign.git?rev=c90484449c0d6497fa5d845e38023845393411d#c90484449c0d6497fa5d845e38023845393411d1"
+source = "git+https://github.com/Sovereign-Labs/sovereign-sdk.git?rev=f5b4bd4ef78b7ab85551a25eeb9d70ebc3c9ebd2#f5b4bd4ef78b7ab85551a25eeb9d70ebc3c9ebd2"
 dependencies = [
  "anyhow",
  "borsh",
  "bytes",
- "jmt",
+ "hex",
  "serde",
- "sha2 0.10.6",
  "thiserror",
 ]
 
