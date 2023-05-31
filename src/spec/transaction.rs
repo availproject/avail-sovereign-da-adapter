@@ -5,7 +5,7 @@ use avail_subxt::{
 };
 
 use serde::{Deserialize, Serialize};
-use sovereign_sdk::{da::BlobTransactionTrait, Bytes};
+use sov_rollup_interface::{da::BlobTransactionTrait, Bytes};
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct AvailBlobTransaction(pub AppUncheckedExtrinsic);

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sovereign_sdk::da::BlockHashTrait;
+use sov_rollup_interface::da::BlockHashTrait;
 use subxt::utils::H256;
 
 #[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq)]

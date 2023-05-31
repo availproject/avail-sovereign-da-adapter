@@ -1,6 +1,6 @@
 use core::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
-use sovereign_sdk::core::traits::AddressTrait;
+use sov_rollup_interface::traits::AddressTrait;
 use subxt::utils::H256;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]

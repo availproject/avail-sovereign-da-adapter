@@ -1,4 +1,4 @@
-use sovereign_sdk::da::DaSpec;
+use sov_rollup_interface::da::DaSpec;
 
 mod address;
 pub mod block;
