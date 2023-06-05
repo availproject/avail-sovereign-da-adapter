@@ -30,11 +30,17 @@ impl DaProvider {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RuntimeConfig {
     light_client_url: String,
     #[serde(skip)]
     node_client: Option<OnlineClient<AvailConfig>>,
+}
+
+impl PartialEq for RuntimeConfig {
+    fn eq(&self, other: &Self) -> bool {
+        self.light_client_url == other.light_client_url
+    }
 }
 
 const POLLING_TIMEOUT: Duration = Duration::from_secs(60);
@@ -211,7 +217,7 @@ mod tests {
 
         let node_ws = "ws://127.0.0.1:9944";
         let light_client_url = "http://127.0.0.1:7000".to_string();
-        let node_client = Some(build_client(node_ws).await.unwrap());
+        let node_client = Some(build_client(node_ws, false).await.unwrap());
         let runtime_config = RuntimeConfig {
             node_client,
             light_client_url,
